@@ -1,0 +1,185 @@
+<?php
+/**
+ * Fichier de traduction français pour The Mind
+ */
+
+$texts = [
+    // ===== GÉNÉRAL =====
+    'site_title' => 'The Mind - Jeu en ligne',
+    'dashboard' => 'Tableau de bord',
+    'rules' => 'Règles du jeu',
+    'settings' => 'Paramètres',
+    'volume' => 'Volume',
+    'language' => 'Langue',
+    'access_profile' => 'Accéder au Profil',
+    'logout' => 'Déconnexion',
+    
+    // ===== CONNEXION =====
+    'login_title' => 'THE MIND',
+    'login_player' => 'JOUEUR',
+    'login_secret_code' => 'CODE SECRET',
+    'login_button' => 'ENTRER DANS L\'ESPRIT',
+    
+    // ===== MESSAGES D'ERREUR =====
+    'error_message_form_validation' => 'Erreur de validation du formulaire.',
+    'error_message_incorrect_credentials' => 'Nom d\'utilisateur ou mot de passe incorrect.',
+    'error_message_role_not_found' => 'Rôle non trouvé pour cet utilisateur.',
+    'error_message_connection_error' => 'Une erreur s\'est produite lors de la connexion.',
+    'error_message_required_fields' => 'Veuillez remplir tous les champs requis.',
+    'error_message_session_expired' => 'Session expirée',
+    'error_message_full_game' => 'Cette partie est déjà complète.',
+    'error_message_game_unavailable' => 'Cette partie n\'est plus disponible.',
+    'error_message_join_failed' => 'Une erreur est survenue lors de la tentative de rejoindre la partie.',
+    
+    // ===== RÈGLES DU JEU =====
+    'rules_title' => 'Règles de The Mind',
+    'game_objective_title' => 'Objectif du Jeu',
+    'game_objective_content' => 'Jouer des cartes de 1 à 100 dans l\'ordre croissant sans communication verbale.',
+    'box_content_title' => 'Contenu de la Boîte',
+    'numbered_cards' => '100 cartes numérotées',
+    'special_cards' => 'Cartes Niveau, Vies (lapins), Shurikens (étoiles)',
+    'setup_title' => 'Mise en Place',
+    'setup_intro' => 'Distribuez Vies et Shurikens :',
+    'setup_3_4_players' => '2 Vies & 1 Shuriken (3-4 joueurs)',
+    'setup_2_players' => '3 Vies & 1 Shuriken (2 joueurs)',
+    'turn_title' => 'Déroulement d\'un Tour',
+    'turn_content' => 'Silence total, jouez vos cartes quand vous le sentez. Perdez une Vie en cas d\'erreur.',
+    'shuriken_title' => 'Pouvoir Spécial : Le Shuriken',
+    'shuriken_content' => 'Permet à chaque joueur de défausser sa plus petite carte si tout le monde est d\'accord.',
+    'rewards_title' => 'Récompenses',
+    'rewards_content' => 'Récompenses à gagner en progressant dans les niveaux.',
+    
+    // ===== JEU =====
+    'game_room' => 'Salon de Jeu',
+    'level' => 'Niveau',
+    'lives' => 'Vies',
+    'shurikens' => 'Shurikens',
+    'your_cards' => 'Vos cartes',
+    'played_cards' => 'Cartes jouées',
+    'players' => 'Joueurs',
+    'play_card' => 'Jouer',
+    'use_shuriken' => 'Utiliser Shuriken',
+    'waiting' => 'En attente...',
+    'card_played_by' => 'jouée par',
+    'empty_deck' => 'Toutes les cartes ont été jouées !',
+    'game_over' => 'Partie terminée',
+    'win_message' => 'Félicitations ! Vous avez gagné !',
+    'lose_message' => 'Vous avez perdu. Essayez encore !',
+    'back_to_dashboard' => 'Retour au tableau de bord',
+    'next_level' => 'Niveau suivant',
+    'admin_controls' => 'Contrôles Admin',
+    'start_game' => 'Démarrer la partie',
+    'pause_game' => 'Pause',
+    'resume_game' => 'Reprendre',
+    'cancel_game' => 'Annuler la partie',
+    'no_cards_played' => 'Aucune carte jouée',
+    'card_played_success' => 'Carte jouée avec succès',
+    'card_played_error' => 'Carte jouée, mais il y avait une carte plus petite en jeu. Vous perdez une vie !',
+    
+    // ===== MODAL SHURIKEN =====
+    'use_shuriken_title' => 'Utiliser un Shuriken',
+    'use_shuriken_desc' => 'Tous les joueurs doivent défausser leur plus petite carte.',
+    'confirm' => 'Confirmer',
+    'cancel' => 'Annuler',
+    
+    // ===== MODAL ERREUR =====
+    'error' => 'Erreur',
+    'close' => 'Fermer',
+    
+    // ===== STATUTS =====
+    'status_waiting' => 'En attente',
+    'status_in_progress' => 'En cours',
+    'status_completed' => 'Terminée',
+    'status_full' => 'Complète',
+    'status_paused' => 'En pause',
+    'status_cancelled' => 'Annulée',
+    
+    // ===== TABLEAU DE BORD =====
+    'refresh' => 'Rafraîchir',
+    'join_game' => 'Rejoindre une Partie',
+    'filter_games' => 'Filtrer les Parties',
+    'administration' => 'Administration',
+    'select_game' => 'Sélectionnez une partie :',
+    'join' => 'Rejoindre',
+    'filter_by_admin' => 'Entrez le nom de l\'administrateur pour filtrer :',
+    'data_updated' => 'Données actualisées',
+    'no_games_available' => 'Aucune partie disponible pour le moment.',
+    'game_name_column' => 'Partie',
+    'players_column' => 'Joueurs',
+    'admin_column' => 'Administrateur',
+    'level_column' => 'Niveau',
+    'status_column' => 'Statut',
+    'action_column' => 'Action',
+    
+    // ===== PROFIL =====
+    'profile_title' => 'Profil Utilisateur - The Mind',
+    'statistics' => 'Statistiques',
+    'identifier' => 'Identifiant',
+    'games_played' => 'Parties Jouées',
+    'games_won' => 'Parties Gagnées',
+    'success_rate' => 'Taux de réussite',
+    'max_level' => 'Niveau Max atteint',
+    'create_game' => 'Créer une partie',
+    'admin_panel' => 'Panel Administrateur',
+    'users' => 'Utilisateurs',
+    'add_user' => 'Ajouter Utilisateur',
+    'game_creation' => 'Création de Partie',
+    'email' => 'Email',
+    'username' => 'Identifiant',
+    'password' => 'Mot de Passe',
+    'confirm_password' => 'Confirmer le mot de passe',
+    'role' => 'Rôle',
+    'select_role' => 'Sélectionner un rôle',
+    'avatar' => 'Avatar',
+    'avatar_placeholder' => 'Emoji (ex: 👤, 🐱, etc.)',
+    'actions' => 'Actions',
+    'submit' => 'Ajouter',
+    'game_name' => 'Nom de la partie',
+    'enter_game_name' => 'Entrez un nom pour votre partie',
+    'player_count' => 'Nombre de joueurs',
+    'difficulty' => 'Niveau de difficulté',
+    'easy' => 'Facile',
+    'medium' => 'Moyen',
+    'hard' => 'Difficile',
+    'privacy' => 'Confidentialité',
+    'public_game' => 'Partie publique',
+    'private_game' => 'Partie privée',
+    'starting_level' => 'Niveau de départ',
+    'create_start_game' => 'Créer et démarrer la partie',
+    'generate_random_username' => 'Générer un identifiant aléatoire',
+    
+    // ===== ERREURS DE JEU =====
+    'unauthorized' => 'Non autorisé',
+    'invalid_csrf_token' => 'Jeton CSRF invalide',
+    'invalid_parameters' => 'Paramètres invalides',
+    'invalid_game_id' => 'ID de partie invalide',
+    'game_not_found' => 'Partie introuvable',
+    'game_not_in_progress' => 'La partie n\'est pas en cours',
+    'invalid_card' => 'Carte non valide',
+    'lower_card_exists' => 'Cette carte est inférieure à la dernière carte jouée',
+    'no_shurikens' => 'Aucun shuriken disponible',
+    'server_error' => 'Erreur serveur',
+    'not_admin' => 'Vous n\'êtes pas administrateur de cette partie',
+    'action_not_recognized' => 'Action non reconnue',
+    'max_level_reached' => 'Niveau maximum atteint',
+    
+    // ===== MESSAGES DE SUCCÈS =====
+    'game_started_success' => 'Partie démarrée avec succès',
+    'game_paused_success' => 'Partie mise en pause',
+    'game_resumed_success' => 'Partie reprise',
+    'game_cancelled_success' => 'Partie annulée',
+    'shuriken_used_success' => 'Shuriken utilisé avec succès',
+    'started' => 'démarré',
+    'bonus' => 'Bonus',
+    'life' => 'vie',
+    'shuriken' => 'shuriken',
+    
+    // ===== PRÉFÉRENCES =====
+    'invalid_csrf_token' => 'Jeton CSRF invalide',
+    'invalid_parameters' => 'Paramètres invalides',
+    'preferences_saved' => 'Préférences sauvegardées',
+    
+    // ===== MÉTHODES HTTP =====
+    'method_not_allowed' => 'Méthode non autorisée'
+];
+?>

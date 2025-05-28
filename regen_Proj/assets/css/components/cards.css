@@ -1,0 +1,613 @@
+/* ===== COMPOSANTS CARTES DE JEU ===== */
+
+/* ===== CONTENEURS DE CARTES ===== */
+
+/* Zone des cartes du joueur */
+.player-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+    justify-content: center;
+    align-items: flex-end;
+    min-height: 170px;
+    padding: var(--spacing-lg);
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius-lg);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+/* Zone des cartes jouées */
+.played-cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+    justify-content: center;
+    min-height: 120px;
+    padding: var(--spacing-lg);
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: var(--border-radius-lg);
+    border: 2px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ===== CARTE INDIVIDUELLE ===== */
+
+.card {
+    width: 100px;
+    height: 150px;
+    perspective: 1000px;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    user-select: none;
+    margin: 0 var(--spacing-xs);
+}
+
+/* États de la carte */
+.card:hover {
+    transform: translateY(-15px) scale(1.05);
+    z-index: 10;
+}
+
+.card.selected {
+    transform: translateY(-25px) scale(1.1);
+    z-index: 20;
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+}
+
+.card.played {
+    opacity: 0.3;
+    transform: scale(0.8);
+    pointer-events: none;
+}
+
+.card.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    filter: grayscale(0.5);
+}
+
+/* ===== STRUCTURE 3D DE LA CARTE ===== */
+
+.card__inner {
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+    position: relative;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    border-radius: var(--border-radius-lg);
+    background-color: white;
+    border: 3px solid #333;
+}
+
+.card.flipped .card__inner {
+    transform: rotateY(180deg);
+}
+
+/* ===== FACES DE LA CARTE ===== */
+
+.card__front,
+.card__back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+/* Face avant (numéro visible) */
+.card__front {
+    background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+    color: #333;
+    position: relative;
+}
+
+/* Arrière-plan de carte avec image */
+.card__front::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('../images/cards/card-background.jpg');
+    background-size: cover;
+    background-position: center;
+    opacity: 0.1;
+    z-index: 0;
+}
+
+/* Face arrière (dos de carte) */
+.card__back {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--light-color);
+    transform: rotateY(180deg);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Effet de brillance sur le dos */
+.card__back::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    animation: cardBackGlow 4s linear infinite;
+}
+
+@keyframes cardBackGlow {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===== CONTENU DE LA CARTE ===== */
+
+/* Valeur de la carte */
+.card__value {
+    font-size: 48px;
+    font-weight: 900;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    font-family: var(--font-main);
+    position: relative;
+    z-index: 2;
+    line-height: 1;
+}
+
+/* Logo The Mind sur le dos */
+.card__logo {
+    font-size: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+}
+
+.mind-eye {
+    font-size: 56px;
+    animation: mindEyePulse 3s infinite ease-in-out;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+}
+
+@keyframes mindEyePulse {
+    0%, 100% { 
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% { 
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+}
+
+/* ===== COULEURS SPÉCIALES POUR LES VALEURS ===== */
+
+/* Cartes 1-9 en rouge */
+.card[data-value="1"] .card__value,
+.card[data-value="2"] .card__value,
+.card[data-value="3"] .card__value,
+.card[data-value="4"] .card__value,
+.card[data-value="5"] .card__value,
+.card[data-value="6"] .card__value,
+.card[data-value="7"] .card__value,
+.card[data-value="8"] .card__value,
+.card[data-value="9"] .card__value {
+    color: var(--primary-color);
+    text-shadow: 0 0 5px rgba(255, 75, 43, 0.5);
+}
+
+/* Dizaines en bleu */
+.card[data-value="10"] .card__value,
+.card[data-value="20"] .card__value,
+.card[data-value="30"] .card__value,
+.card[data-value="40"] .card__value,
+.card[data-value="50"] .card__value,
+.card[data-value="60"] .card__value,
+.card[data-value="70"] .card__value,
+.card[data-value="80"] .card__value,
+.card[data-value="90"] .card__value,
+.card[data-value="100"] .card__value {
+    color: var(--accent-color);
+    font-weight: 900;
+    text-shadow: 0 0 5px rgba(0, 194, 203, 0.5);
+}
+
+/* ===== CARTES JOUÉES ===== */
+
+.played-card {
+    background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-card));
+    border-radius: var(--border-radius);
+    padding: var(--spacing-md);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 80px;
+    min-height: 100px;
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Ligne colorée en haut */
+.played-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+}
+
+.played-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--box-shadow-lg);
+}
+
+.played-card.new-card {
+    animation: cardAppear 0.6s ease-out;
+}
+
+.played-card__value {
+    font-size: 28px;
+    font-weight: bold;
+    color: var(--secondary-color);
+    margin-bottom: var(--spacing-xs);
+    text-shadow: 0 0 5px rgba(255, 217, 102, 0.3);
+}
+
+.played-card__info {
+    font-size: var(--font-size-xs);
+    color: #ccc;
+    text-align: center;
+    opacity: 0.8;
+}
+
+/* ===== ANIMATIONS ===== */
+
+@keyframes cardAppear {
+    0% {
+        transform: scale(0.3) translateY(-50px);
+        opacity: 0;
+        rotate: 180deg;
+    }
+    50% {
+        transform: scale(1.1) translateY(-10px);
+        opacity: 0.8;
+        rotate: 10deg;
+    }
+    100% {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+        rotate: 0deg;
+    }
+}
+
+@keyframes cardFlip {
+    0% { transform: rotateY(0deg); }
+    50% { transform: rotateY(90deg) scale(1.1); }
+    100% { transform: rotateY(180deg); }
+}
+
+@keyframes cardFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+@keyframes cardGlow {
+    0%, 100% { 
+        box-shadow: var(--box-shadow);
+        filter: drop-shadow(0 0 5px rgba(255, 215, 0, 0.3));
+    }
+    50% { 
+        box-shadow: var(--box-shadow-xl);
+        filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.8));
+    }
+}
+
+/* Classes d'animation */
+.card--appear { animation: cardAppear 0.6s ease-out; }
+.card--flip { animation: cardFlip 0.6s ease-in-out; }
+.card--float { animation: cardFloat 2s ease-in-out infinite; }
+.card--glow { animation: cardGlow 2s ease-in-out infinite; }
+
+/* ===== ÉTATS SPÉCIAUX ===== */
+
+/* Carte en cours de jeu */
+.card--playing {
+    transform: translateY(-100px) scale(0.5);
+    opacity: 0;
+    transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Carte défaussée */
+.card--discarded {
+    opacity: 0.5;
+    transform: scale(0.9);
+    filter: grayscale(0.7);
+}
+
+/* ===== MESSAGES D'ÉTAT ===== */
+
+.no-cards-message,
+.no-cards-played {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 150px;
+    color: #888;
+    font-style: italic;
+    font-size: var(--font-size-lg);
+    text-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: var(--border-radius);
+    border: 2px dashed rgba(255, 255, 255, 0.2);
+    padding: var(--spacing-lg);
+    width: 100%;
+    position: relative;
+}
+
+.no-cards-message::before,
+.no-cards-played::before {
+    content: '🃏';
+    font-size: 48px;
+    display: block;
+    margin-bottom: var(--spacing-sm);
+    opacity: 0.5;
+}
+
+/* ===== EFFETS INTERACTIFS ===== */
+
+/* Effet 3D réactif au survol */
+.card--3d:hover .card__inner {
+    transform: perspective(1000px) rotateX(var(--rotate-x, 0deg)) rotateY(var(--rotate-y, 0deg));
+}
+
+/* Effet de brillance */
+.card--shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.card--shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.6s;
+    z-index: 3;
+}
+
+.card--shine:hover::before {
+    left: 100%;
+}
+
+/* ===== CARTES SPÉCIALES ===== */
+
+/* Carte bonus vie */
+.card--bonus-life {
+    border: 2px solid var(--success-color);
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.4);
+}
+
+.card--bonus-life .card__value {
+    color: var(--success-color);
+}
+
+/* Carte bonus shuriken */
+.card--bonus-shuriken {
+    border: 2px solid #FFD700;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+}
+
+.card--bonus-shuriken .card__value {
+    color: #FFD700;
+}
+
+/* Carte d'erreur */
+.card--error {
+    border: 2px solid var(--error-color);
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+    animation: shake 0.5s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ===== INDICATEURS DE STATUT ===== */
+
+.card--playable::after {
+    content: '✓';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--success-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+.card--blocked::after {
+    content: '✗';
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: var(--error-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    z-index: 10;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 768px) {
+    .card {
+        width: 80px;
+        height: 120px;
+        margin: 0 var(--spacing-xs);
+    }
+    
+    .card__value {
+        font-size: 36px;
+    }
+    
+    .mind-eye {
+        font-size: 40px;
+    }
+    
+    .player-cards {
+        padding: var(--spacing-md);
+        gap: var(--spacing-sm);
+        min-height: 140px;
+    }
+    
+    .played-card {
+        min-width: 60px;
+        min-height: 80px;
+        padding: var(--spacing-sm);
+    }
+    
+    .played-card__value {
+        font-size: 20px;
+    }
+    
+    .played-card__info {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .card {
+        width: 70px;
+        height: 105px;
+    }
+    
+    .card__value {
+        font-size: 28px;
+    }
+    
+    .mind-eye {
+        font-size: 32px;
+    }
+    
+    .player-cards {
+        gap: var(--spacing-xs);
+        min-height: 120px;
+    }
+    
+    .played-cards {
+        gap: var(--spacing-xs);
+        min-height: 100px;
+    }
+    
+    .played-card {
+        min-width: 50px;
+        min-height: 70px;
+    }
+    
+    .played-card__value {
+        font-size: 18px;
+    }
+    
+    .no-cards-message,
+    .no-cards-played {
+        height: 120px;
+        font-size: var(--font-size-base);
+    }
+    
+    .no-cards-message::before,
+    .no-cards-played::before {
+        font-size: 32px;
+    }
+}
+
+/* ===== ACCESSIBILITÉ ===== */
+
+.card:focus {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.card[aria-pressed="true"] {
+    transform: translateY(-25px) scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(255, 215, 0, 0.8));
+}
+
+/* Réduction de mouvement */
+@media (prefers-reduced-motion: reduce) {
+    .card,
+    .card__inner,
+    .played-card,
+    .mind-eye {
+        animation: none;
+        transition: none;
+    }
+    
+    .card:hover {
+        transform: none;
+    }
+    
+    .card.selected {
+        transform: none;
+        border: 3px solid var(--accent-color);
+    }
+    
+    .card__back::before {
+        animation: none;
+    }
+}
+
+/* ===== THÈMES ===== */
+
+/* Mode sombre (défaut) */
+.theme-dark .card__front {
+    background: linear-gradient(135deg, #2a2a2a, #1a1a1a);
+    color: var(--light-color);
+}
+
+/* Mode clair */
+.theme-light .card__front {
+    background: linear-gradient(135deg, #fff, #f8f8f8);
+    color: var(--dark-color);
+}
+
+.theme-light .card__back {
+    background: linear-gradient(135deg, var(--accent-color), #00e1cb);
+}
