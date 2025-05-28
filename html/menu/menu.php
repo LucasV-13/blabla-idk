@@ -101,6 +101,30 @@ $site_url = "/"; // Remplacez par l'URL de votre site
     <meta charset="UTF-8">
     <title><?php echo $texts['site_title']; ?></title>
     <link rel="stylesheet" href="style/styleMenu.css">
+    <style>
+        /* Ajout minimal pour le titre THE MIND */
+        .site-title {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 24px;
+            font-weight: bold;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 3px;
+            pointer-events: none; /* Pour éviter d'interférer avec les clics */
+            z-index: 1;
+        }
+        
+        /* Juste s'assurer que le header peut contenir le titre */
+        .header {
+            position: relative;
+        }
+    </style>
 </head>
 <body>
     <!-- Header avec boutons -->
@@ -114,6 +138,10 @@ $site_url = "/"; // Remplacez par l'URL de votre site
         <button class="header-btn" id="settingsBtn" aria-label="<?php echo $texts['settings']; ?>">
             <span class="header-icon" aria-hidden="true">⚙️</span>
         </button>
+        
+        <!-- Titre THE MIND centré -->
+        <div class="site-title">THE MIND</div>
+        
         <div class="user-display">
             <span class="user-avatar-small"><?php echo $avatar; ?></span>
             <span class="username"><?php echo $username; ?></span>
