@@ -1,0 +1,258 @@
+:root {
+    --primary-color: #ff4b2b;
+    --secondary-color: #ffd966;
+    --dark-color: #1a1a2e;
+    --light-color: #f8f8ff;
+    --accent-color: #00c2cb;
+  }
+  
+  /* Base styles */
+          * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+          font-family: 'Orbitron', sans-serif;
+          margin: 0;
+          padding: 0;
+          background-color: var(--dark-color);
+          color: var(--light-color);
+          min-height: 100vh;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          background-image: 
+              radial-gradient(circle at 10% 20%, rgba(255, 75, 43, 0.1) 0%, transparent 20%),
+              radial-gradient(circle at 90% 80%, rgba(0, 194, 203, 0.1) 0%, transparent 20%);
+        }
+        
+        /* Main content */
+        .main-container {
+            flex: 1;
+            display: flex;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        /* User profile section */
+        .profile-section {
+            flex: 1;
+            background-color: #222;
+            border-radius: 10px;
+            padding: 20px;
+            margin-right: 20px;
+        }
+        
+        .user-avatar {
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            color: #333;
+            margin: 0 auto 20px;
+        }
+        
+        .user-info {
+            text-align: center;
+        }
+        
+        .user-name {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .user-email {
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .stats-container {
+            margin-top: 30px;
+        }
+        
+        .stats-heading {
+            font-size: 18px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px;
+            background-color: #2a2a2a;
+            border-radius: 5px;
+        }
+        
+        .create-game-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-top: 30px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .create-game-btn:hover {
+            background-color: #45a049;
+        }
+        
+        /* Admin panel section */
+        .admin-section {
+            flex: 2;
+            background-color: #222;
+            border-radius: 10px;
+            padding: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .panel-heading {
+            font-size: 24px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .panel-tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .panel-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .panel-tab.active {
+            border-bottom-color: #4CAF50;
+            color: #4CAF50;
+        }
+        
+        .panel-content {
+            flex: 1;
+            overflow: auto;
+        }
+        
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .user-table th {
+            text-align: left;
+            padding: 12px 15px;
+            background-color: #1a1a1a;
+            position: sticky;
+            top: 0;
+        }
+        
+        .user-table td {
+            padding: 10px 15px;
+            border-bottom: 1px solid #444;
+        }
+        
+        .user-table tr:hover {
+            background-color: #2a2a2a;
+        }
+        
+        .user-action-btn {
+            background-color: transparent;
+            border: none;
+            color: #4CAF50;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        
+        .user-action-btn.delete {
+            color: #f44336;
+        }
+        
+        .game-creation-panel {
+            display: none; /* Hidden by default */
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 10px;
+            background-color: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: white;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        /* Dashboard button */
+        .dashboard-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            z-index: 5;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .profile-section {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+            
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
