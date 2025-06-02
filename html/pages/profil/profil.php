@@ -75,7 +75,8 @@ if ($estAdmin) {
     try {
         $usersSql = "SELECT Utilisateurs.id, Utilisateurs.identifiant, Utilisateurs.mail, Utilisateurs.mdp, Roles.nom as role_nom 
                     FROM Utilisateurs 
-                    JOIN Roles ON Utilisateurs.id_role = Roles.id";
+                    JOIN Roles ON Utilisateurs.id_role = Roles.id
+                    ORDER BY Utilisateurs.id";
         $usersStmt = $conn->prepare($usersSql);
         $usersStmt->execute();
         $utilisateurs = $usersStmt->fetchAll(PDO::FETCH_ASSOC);
@@ -180,6 +181,11 @@ if ($language === 'fr') {
         'generate_random_username' => 'Generate random username'
     ];
 }
+
+// Récupérer les messages de succès/erreur
+$errorMessage = isset($_SESSION['error_message']) ? $_SESSION['error_message'] : '';
+$successMessage = isset($_SESSION['success_message']) ? $_SESSION['success_message'] : '';
+unset($_SESSION['error_message'], $_SESSION['success_message']);
 ?>
 
 <!DOCTYPE html>
@@ -215,7 +221,7 @@ if ($language === 'fr') {
         }
         
         .form-message {
-            padding: 10px;
+            padding: 15px;
             border-radius: 5px;
             margin-bottom: 15px;
             text-align: center;
@@ -235,20 +241,90 @@ if ($language === 'fr') {
         
         /* Animation pour les champs mis en évidence */
         @keyframes highlightField {
-            0% { background-color: #fff; }
-            50% { background-color: #e0ffe0; }
-            100% { background-color: #fff; }
+            0% { background-color: #333; }
+            50% { background-color: rgba(0, 194, 203, 0.3); }
+            100% { background-color: #333; }
         }
         
         .highlight {
             animation: highlightField 1.5s;
+        }
+        
+        /* Amélioration du tableau des utilisateurs */
+        .user-action-btn {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            cursor: pointer;
+            margin-right: 10px;
+            font-size: 18px;
+            transition: all 0.3s;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .user-action-btn:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.2);
+        }
+        
+        .user-action-btn.edit:hover {
+            color: var(--accent-color);
+        }
+        
+        .user-action-btn.delete {
+            color: #f44336;
+        }
+        
+        .user-action-btn.delete:hover {
+            color: #ff5252;
+        }
+
+        /* Flash messages */
+        .flash-message {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 5px;
+            color: white;
+            font-weight: bold;
+            z-index: 9999;
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .flash-message.success {
+            background-color: #4CAF50;
+        }
+
+        .flash-message.error {
+            background-color: #f44336;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
         }
     </style>
 </head>
 <body>
     <!-- Champ caché pour le jeton CSRF (pour JS) -->
     <input type="hidden" id="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-    <input type="hidden" id="base_url" value="../">
+    <input type="hidden" id="base_url" value="../../">
+
+    <!-- Affichage des messages flash -->
+    <?php if (!empty($successMessage)): ?>
+    <div class="flash-message success" id="flash-success">
+        <?php echo htmlspecialchars($successMessage); ?>
+    </div>
+    <?php endif; ?>
+
+    <?php if (!empty($errorMessage)): ?>
+    <div class="flash-message error" id="flash-error">
+        <?php echo htmlspecialchars($errorMessage); ?>
+    </div>
+    <?php endif; ?>
 
     <!-- Main container -->
     <div class="main-container">
@@ -310,7 +386,7 @@ if ($language === 'fr') {
                         <tr>
                             <th><?php echo $texts['email']; ?></th>
                             <th><?php echo $texts['username']; ?></th>
-                            <th><?php echo $texts['password']; ?></th>
+                            <th><?php echo $texts['role']; ?></th>
                             <th><?php echo $texts['actions']; ?></th>
                         </tr>
                     </thead>
@@ -319,10 +395,17 @@ if ($language === 'fr') {
                         <tr>
                             <td><?php echo htmlspecialchars($user['mail']); ?></td>
                             <td><?php echo htmlspecialchars($user['identifiant']); ?></td>
-                            <td>••••••••</td>
+                            <td><?php echo htmlspecialchars($user['role_nom']); ?></td>
                             <td>
-                                <button class="user-action-btn edit" data-id="<?php echo $user['id']; ?>">✏️</button>
-                                <button class="user-action-btn delete" data-id="<?php echo $user['id']; ?>">🗑️</button>
+                                <button class="user-action-btn edit" 
+                                        data-id="<?php echo $user['id']; ?>" 
+                                        title="Modifier cet utilisateur">✏️</button>
+                                <?php if ($_SESSION['user_id'] != $user['id']): // Ne pas permettre de se supprimer soi-même ?>
+                                <button class="user-action-btn delete" 
+                                        data-id="<?php echo $user['id']; ?>" 
+                                        data-username="<?php echo htmlspecialchars($user['identifiant']); ?>"
+                                        title="Supprimer cet utilisateur">🗑️</button>
+                                <?php endif; ?>
                             </td>
                         </tr>
                         <?php endforeach; ?>
@@ -473,17 +556,24 @@ if ($language === 'fr') {
         const csrfToken = document.getElementById('csrf_token') ? document.getElementById('csrf_token').value : '';
         const baseUrl = document.getElementById('base_url') ? document.getElementById('base_url').value : '';
         
+        // Faire disparaître les messages flash automatiquement
+        setTimeout(() => {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(msg => {
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateX(100%)';
+                setTimeout(() => msg.remove(), 300);
+            });
+        }, 5000);
+        
         // ==== Gestion des onglets ====
         if (usersTab && addUserTab && gameCreationTab) {
             usersTab.addEventListener('click', () => {
-                // Activer l'onglet et afficher le panel correspondant
                 setActiveTab(usersTab, usersPanel);
             });
             
             addUserTab.addEventListener('click', () => {
-                // Activer l'onglet et afficher le panel correspondant
                 setActiveTab(addUserTab, addUserPanel);
-                // Réinitialiser le formulaire et effacer les valeurs indésirables
                 if (addUserForm) {
                     addUserForm.reset();
                     resetFormFields();
@@ -491,55 +581,63 @@ if ($language === 'fr') {
             });
             
             gameCreationTab.addEventListener('click', () => {
-                // Activer l'onglet et afficher le panel correspondant
                 setActiveTab(gameCreationTab, gameCreationPanel);
             });
         }
         
         // Fonction pour définir l'onglet actif et afficher le panel correspondant
         function setActiveTab(activeTab, activePanel) {
-            // Désactiver tous les onglets
             [usersTab, addUserTab, gameCreationTab].forEach(tab => {
                 if (tab) tab.classList.remove('active');
             });
             
-            // Cacher tous les panels
             [usersPanel, addUserPanel, gameCreationPanel].forEach(panel => {
                 if (panel) panel.style.display = 'none';
             });
             
-            // Activer l'onglet et le panel sélectionnés
             if (activeTab) activeTab.classList.add('active');
             if (activePanel) activePanel.style.display = 'block';
         }
         
-        // ==== Génération d'identifiant aléatoire ====
+        // ==== Fonction pour générer un identifiant mémorisable ====
+        function generateMemoableUsername() {
+            const adjectives = [
+                'super', 'grand', 'petit', 'rapide', 'fort', 'brave', 
+                'vif', 'agile', 'sympa', 'cool', 'smart', 'pro', 
+                'top', 'zen', 'tech', 'mega', 'ultra', 'hyper'
+            ];
+            
+            const nouns = [
+                'joueur', 'hero', 'ninja', 'panda', 'aigle', 'tigre', 
+                'lion', 'loup', 'ours', 'robot', 'pilote', 'agent', 
+                'gamer', 'master', 'expert', 'champion', 'star', 'ace'
+            ];
+            
+            const adjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+            const noun = nouns[Math.floor(Math.random() * nouns.length)];
+            const randomNum = Math.floor(Math.random() * 900) + 100;
+            
+            return `${adjective}${noun}${randomNum}`;
+        }
+        
+        // ==== Génération d'identifiant mémorisable ====
         if (generateRandomUsernameBtn && newUsernameField) {
             generateRandomUsernameBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                
-                // Générer un identifiant unique basé sur un timestamp et un nombre aléatoire
-                const prefix = 'user';
-                const timestamp = new Date().getTime().toString().slice(-6);
-                const random = Math.floor(Math.random() * 1000);
-                const randomUsername = `${prefix}_${timestamp}_${random}`;
-                
-                // Définir la valeur du champ
-                newUsernameField.value = randomUsername;
-                
-                // Mettre en évidence le champ
+                newUsernameField.value = generateMemoableUsername();
                 highlightField(newUsernameField);
             });
+        }
+        
+        // Générer automatiquement un identifiant au chargement
+        if (newUsernameField) {
+            newUsernameField.value = generateMemoableUsername();
         }
         
         // Fonction pour mettre en évidence un champ
         function highlightField(field) {
             if (!field) return;
-            
-            // Ajouter la classe d'animation
             field.classList.add('highlight');
-            
-            // Supprimer la classe après l'animation
             setTimeout(() => {
                 field.classList.remove('highlight');
             }, 1500);
@@ -547,14 +645,12 @@ if ($language === 'fr') {
         
         // ==== Gestion du formulaire d'ajout d'utilisateur ====
         if (addUserForm) {
-            // Au chargement du formulaire, réinitialiser les champs
             resetFormFields();
             
-            // Lors de la soumission du formulaire
             addUserForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Vérifier les valeurs par défaut problématiques
+                // Vérifications des valeurs par défaut problématiques
                 if (newUsernameField && newUsernameField.value === 'user') {
                     showFormMessage('L\'identifiant "user" n\'est pas autorisé. Veuillez en choisir un autre ou utiliser le bouton de génération.', 'error');
                     highlightField(newUsernameField);
@@ -572,6 +668,11 @@ if ($language === 'fr') {
                     showFormMessage('Les mots de passe ne correspondent pas.', 'error');
                     highlightField(confirmPasswordField);
                     return;
+                }
+                
+                // Si l'identifiant est vide ou "user", le remplacer
+                if (!newUsernameField.value || newUsernameField.value === 'user') {
+                    newUsernameField.value = generateMemoableUsername();
                 }
                 
                 // Créer un objet FormData pour envoyer les données
@@ -597,7 +698,6 @@ if ($language === 'fr') {
                 })
                 .then(data => {
                     if (data.success) {
-                        // Succès
                         showFormMessage(data.message, 'success');
                         addUserForm.reset();
                         userAvatarField.value = '👤';
@@ -607,10 +707,8 @@ if ($language === 'fr') {
                             window.location.reload();
                         }, 1500);
                     } else {
-                        // Erreur
                         showFormMessage(data.message, 'error');
                         
-                        // Mettre en évidence le champ problématique s'il est spécifié
                         if (data.field) {
                             const fieldMap = {
                                 'username': newUsernameField,
@@ -635,7 +733,6 @@ if ($language === 'fr') {
             [newUsernameField, newPasswordField, confirmPasswordField].forEach(field => {
                 if (field) {
                     field.addEventListener('focus', function() {
-                        // Effacer les valeurs par défaut problématiques au focus
                         if (this === newUsernameField && this.value === 'user') {
                             this.value = '';
                         } else if ((this === newPasswordField || this === confirmPasswordField) && 
@@ -645,7 +742,6 @@ if ($language === 'fr') {
                     });
                     
                     field.addEventListener('input', function() {
-                        // Effacer immédiatement si la valeur par défaut est saisie
                         if (this === newUsernameField && this.value === 'user') {
                             this.value = '';
                         } else if ((this === newPasswordField || this === confirmPasswordField) && 
@@ -659,7 +755,6 @@ if ($language === 'fr') {
         
         // Fonction pour réinitialiser les champs du formulaire
         function resetFormFields() {
-            // Effacer les valeurs par défaut problématiques
             if (newUsernameField && newUsernameField.value === 'user') {
                 newUsernameField.value = '';
             }
@@ -672,12 +767,10 @@ if ($language === 'fr') {
                 confirmPasswordField.value = '';
             }
             
-            // Réinitialiser l'avatar à 👤
             if (userAvatarField) {
                 userAvatarField.value = '👤';
             }
             
-            // Cacher le message de formulaire
             if (formMessage) {
                 formMessage.style.display = 'none';
             }
@@ -692,10 +785,8 @@ if ($language === 'fr') {
             formMessage.classList.add(type === 'success' ? 'success-message' : 'error-message');
             formMessage.style.display = 'block';
             
-            // Faire défiler jusqu'au message
             formMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
-            // Cacher le message après un délai si c'est un succès
             if (type === 'success') {
                 setTimeout(() => {
                     formMessage.style.display = 'none';
@@ -703,22 +794,42 @@ if ($language === 'fr') {
             }
         }
         
-        // ==== Gestion de la suppression d'utilisateurs ====
-        // Ajouter un gestionnaire d'événements pour les boutons de suppression
-        document.querySelectorAll('.user-action-btn.delete').forEach(btn => {
+        // ==== Gestion de l'édition d'utilisateurs ====
+        document.querySelectorAll('.user-action-btn.edit').forEach(btn => {
             btn.addEventListener('click', function() {
-                const row = this.closest('tr');
-                const email = row.cells[0].textContent;
-                const username = row.cells[1].textContent;
                 const userId = this.getAttribute('data-id');
                 
-                if (confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${username} (${email}) ?`)) {
-                    // Créer un objet FormData pour envoyer les données
+                if (userId) {
+                    window.location.href = baseUrl + 'pages/profil/edit_user.php?id=' + userId + '&csrf_token=' + encodeURIComponent(csrfToken);
+                } else {
+                    console.error('ID utilisateur manquant');
+                    alert('Erreur: ID utilisateur manquant');
+                }
+            });
+        });
+        
+        // Fonction standalone pour éditer un utilisateur
+        function editUser(userId) {
+            if (!userId || userId <= 0) {
+                console.error('ID utilisateur invalide:', userId);
+                alert('Erreur: ID utilisateur invalide');
+                return;
+            }
+            
+            window.location.href = baseUrl + 'pages/profil/edit_user.php?id=' + userId + '&csrf_token=' + encodeURIComponent(csrfToken);
+        }
+        
+        // ==== Gestion de la suppression d'utilisateurs ====
+        document.querySelectorAll('.user-action-btn.delete').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const userId = this.getAttribute('data-id');
+                const username = this.getAttribute('data-username');
+                
+                if (confirm(`Êtes-vous sûr de vouloir supprimer l'utilisateur ${username} ?`)) {
                     const formData = new FormData();
                     formData.append('csrf_token', csrfToken);
                     formData.append('id', userId);
                     
-                    // Envoyer la requête via fetch API
                     fetch(baseUrl + 'pages/profil/delete_user.php', {
                         method: 'POST',
                         body: formData
@@ -731,16 +842,15 @@ if ($language === 'fr') {
                     })
                     .then(data => {
                         if (data.success) {
-                            // Supprimer la ligne du tableau
-                            row.remove();
-                            alert('Utilisateur supprimé avec succès.');
+                            this.closest('tr').remove();
+                            showFlashMessage('Utilisateur supprimé avec succès.', 'success');
                         } else {
-                            alert('Erreur lors de la suppression: ' + data.message);
+                            showFlashMessage('Erreur lors de la suppression: ' + data.message, 'error');
                         }
                     })
                     .catch(error => {
                         console.error('Erreur:', error);
-                        alert('Une erreur est survenue lors de la suppression.');
+                        showFlashMessage('Une erreur est survenue lors de la suppression.', 'error');
                     });
                 }
             });
@@ -749,129 +859,41 @@ if ($language === 'fr') {
         // ==== Bouton de création de partie ====
         if (createGameBtn && gameCreationTab) {
             createGameBtn.addEventListener('click', () => {
-                // Basculer vers l'onglet de création de partie
                 setActiveTab(gameCreationTab, gameCreationPanel);
             });
         }
         
+        // Fonction pour afficher des messages flash
+        function showFlashMessage(message, type) {
+            const flashMessage = document.createElement('div');
+            flashMessage.className = `flash-message ${type}`;
+            flashMessage.textContent = message;
+            document.body.appendChild(flashMessage);
+            
+            setTimeout(() => {
+                flashMessage.style.opacity = '0';
+                flashMessage.style.transform = 'translateX(100%)';
+                setTimeout(() => flashMessage.remove(), 300);
+            }, 3000);
+        }
+        
         // ==== Désactiver l'autocomplétion ====
-        // Fonction pour désactiver l'autocomplétion sur tous les champs
         function disableAutocomplete() {
             document.querySelectorAll('input, select, textarea').forEach(input => {
                 input.setAttribute('autocomplete', 'new-' + Math.random().toString(36).substring(2));
             });
         }
         
-        // Appliquer la désactivation de l'autocomplétion
         disableAutocomplete();
         
         // Nettoyage immédiat des valeurs par défaut indésirables
         window.setTimeout(resetFormFields, 100);
         window.setTimeout(resetFormFields, 500);
         window.setTimeout(resetFormFields, 1000);
+        
+        // Rendre les fonctions accessibles globalement
+        window.editUser = editUser;
     });
-    </script>
-    <script>
-
-document.addEventListener('DOMContentLoaded', function() {
-    // Fonction pour générer un identifiant vraiment unique et aléatoire
-    function generateTrulyUniqueUsername() {
-        const prefix = 'user';
-        const timestamp = Date.now(); // Timestamp en millisecondes
-        const random1 = Math.floor(Math.random() * 10000);
-        const random2 = Math.random().toString(36).substring(2, 7); // Caractères alphanumériques
-        return `${prefix}_${timestamp}_${random1}_${random2}`;
-    }
-    
-    // On force l'utilisation d'un identifiant unique au chargement de la page
-    const newUsernameField = document.getElementById('newUsername');
-    if (newUsernameField) {
-        // Générer immédiatement un identifiant unique
-        newUsernameField.value = generateTrulyUniqueUsername();
-        
-        // Ajouter un attribut readonly pour empêcher la modification
-        newUsernameField.setAttribute('readonly', 'readonly');
-        newUsernameField.style.backgroundColor = '#f0f0f0';
-        
-        // Ajoutez un texte explicatif
-        const infoText = document.createElement('small');
-        infoText.style.display = 'block';
-        infoText.style.marginTop = '5px';
-        infoText.style.color = '#666';
-        infoText.textContent = 'Identifiant généré automatiquement pour éviter les conflits.';
-        newUsernameField.parentNode.appendChild(infoText);
-    }
-    
-    // Remplacer la fonction du bouton "Générer un identifiant aléatoire"
-    const generateRandomUsernameBtn = document.getElementById('generateRandomUsername');
-    if (generateRandomUsernameBtn && newUsernameField) {
-        generateRandomUsernameBtn.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            // Générer un nouvel identifiant unique
-            newUsernameField.value = generateTrulyUniqueUsername();
-        });
-        
-        // Changer le texte du bouton pour plus de clarté
-        generateRandomUsernameBtn.textContent = 'Générer un nouvel identifiant unique';
-    }
-    
-    // Intercepter le formulaire avant soumission pour forcer les valeurs correctes
-    const addUserForm = document.getElementById('addUserForm');
-    if (addUserForm) {
-        addUserForm.addEventListener('submit', function(e) {
-            // Si l'identifiant est vide ou "user", le remplacer
-            if (!newUsernameField.value || newUsernameField.value === 'user') {
-                newUsernameField.value = generateTrulyUniqueUsername();
-            }
-            
-            // Si le mot de passe est "Eloi2023*", l'afficher à l'utilisateur
-            const passwordField = document.getElementById('newPassword');
-            const confirmPasswordField = document.getElementById('confirmPassword');
-            
-            if (passwordField && passwordField.value === 'Eloi2023*') {
-                if (!confirm("Le mot de passe 'Eloi2023*' n'est pas recommandé. Voulez-vous continuer quand même?")) {
-                    e.preventDefault();
-                    return false;
-                }
-            }
-            
-            // S'assurer que les mots de passe correspondent
-            if (passwordField && confirmPasswordField && passwordField.value !== confirmPasswordField.value) {
-                alert("Les mots de passe ne correspondent pas!");
-                e.preventDefault();
-                return false;
-            }
-        });
-    }
-    
-    // Fonction pour vider le cache d'autocomplétion
-    function clearAutocompleteCache() {
-        // Créer un formulaire temporaire avec un champ de mot de passe
-        const tempForm = document.createElement('form');
-        tempForm.style.display = 'none';
-        tempForm.setAttribute('autocomplete', 'off');
-        
-        const tempInput = document.createElement('input');
-        tempInput.setAttribute('type', 'password');
-        tempInput.setAttribute('autocomplete', 'new-password');
-        tempInput.setAttribute('name', 'temp_' + Math.random());
-        
-        tempForm.appendChild(tempInput);
-        document.body.appendChild(tempForm);
-        
-        // Simuler une soumission et supprimer le formulaire
-        tempInput.focus();
-        tempForm.reset();
-        
-        setTimeout(function() {
-            document.body.removeChild(tempForm);
-        }, 1000);
-    }
-    
-    // Tenter de vider le cache d'autocomplétion
-    clearAutocompleteCache();
-});
     </script>
 </body>
 </html>
