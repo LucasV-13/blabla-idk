@@ -1,2 +1,0 @@
-{"timestamp":"2025-05-31 11:17:20","level":"INFO","message":"Accès refusé - non authentifié","context":{"page":"\/html\/pages\/dashboard.php","session_data":{"has_user_id":false,"has_username":false,"has_expires":false,"session_id":"iill51gldh64i0pp1r6kd40h3f"}},"ip":"::1","user_id":null}
-{"timestamp":"2025-05-31 11:17:26","level":"INFO","message":"Accès refusé - non authentifié","context":{"page":"\/html\/pages\/dashboard.php","session_data":{"has_user_id":false,"has_username":false,"has_expires":false,"session_id":"ets35tiu4a7ljecjgopblcclbi"}},"ip":"::1","user_id":null}
