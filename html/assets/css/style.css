@@ -1,0 +1,183 @@
+:root {
+    --primary-color: #ff4b2b;
+    --secondary-color: #ffd966;
+    --dark-color: #1a1a2e;
+    --light-color: #f8f8ff;
+    --accent-color: #00c2cb;
+}
+
+body {
+    font-family: 'Orbitron', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--dark-color);
+    color: var(--light-color);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(255, 75, 43, 0.1) 0%, transparent 20%),
+        radial-gradient(circle at 90% 80%, rgba(0, 194, 203, 0.1) 0%, transparent 20%);
+}
+
+h1 {
+    color: var(--secondary-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px rgba(255, 217, 102, 0.5);
+}
+
+/* Login Container */
+.login-container {
+    background-color: rgba(26, 26, 46, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255, 75, 43, 0.3), 
+                 0 0 40px rgba(0, 194, 203, 0.2);
+    padding: 2.5rem;
+    width: 90%;
+    max-width: 400px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, transparent 70%, var(--accent-color) 150%);
+    opacity: 0.1;
+    animation: pulse 4s infinite ease-in-out;
+    z-index: -1;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); opacity: 0.1; }
+    50% { transform: scale(1.1); opacity: 0.15; }
+    100% { transform: scale(1); opacity: 0.1; }
+}
+
+h2 {
+    color: var(--secondary-color);
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    letter-spacing: 2px;
+    text-shadow: 0 0 5px rgba(255, 217, 102, 0.5);
+}
+
+.error {
+    background-color: rgba(255, 75, 43, 0.2);
+    color: var(--primary-color);
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.9rem;
+    border-left: 3px solid var(--primary-color);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+    position: relative;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+    color: var(--secondary-color);
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+    color: var(--light-color);
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+input[type="text"]:focus, input[type="password"]:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 10px rgba(0, 194, 203, 0.3);
+}
+
+/* Design des boutons */
+button[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: var(--dark-color);
+    border: none;
+    border-radius: 5px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 75, 43, 0.3);
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 15px rgba(255, 75, 43, 0.5);
+}
+
+button[type="submit"]:active {
+    transform: translateY(1px);
+}
+
+/* Design for Card */
+
+.mind-icon {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.mind-icon svg {
+    width: 70px;
+    height: 70px;
+    filter: drop-shadow(0 0 5px rgba(0, 194, 203, 0.5));
+}
+
+.card-glow {
+    width: 60px;
+    height: 90px;
+    background: linear-gradient(to bottom, var(--primary-color), var(--secondary-color));
+    border-radius: 8px;
+    display: inline-block;
+    position: relative;
+    margin: 0 5px;
+    box-shadow: 0 0 15px rgba(255, 75, 43, 0.4);
+    animation: float 3s infinite ease-in-out;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0); }
+}
+
+.card-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--dark-color);
+    font-size: 1.5rem;
+    font-weight: bold;
+}
